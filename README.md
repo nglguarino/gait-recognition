@@ -30,11 +30,6 @@ The multimodal model using direct preprocessed features (`gru_cnn_fusion`) signi
 
 
 
-### Confusion Matrix for the Best Model
-The confusion matrix below shows the per-class accuracy of the `gru_cnn_fusion` model.
-
-
-
 ## ⚙️ Project Pipeline
 
 The project follows a systematic pipeline from raw data to final evaluation:
