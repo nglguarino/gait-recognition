@@ -1,71 +1,92 @@
-# Multimodal Gait Recognition
+# Efficient Gait Recognition with Regularized GRU
 
-![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)
-![TensorFlow 2.x](https://img.shields.io/badge/tensorflow-2.x-orange.svg)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+<!-- Tech stack -->
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-orange?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
+[![snnTorch](https://img.shields.io/badge/snnTorch-000000)](https://snntorch.readthedocs.io/)
 
-This project develops and evaluates a suite of deep learning models for human gait classification using multimodal sensor data. The primary goal is to accurately identify six different gait patterns from 3D skeleton joint positions and plantar foot pressure data.
-
-The analysis culminates in a top-performing multimodal model that directly fuses preprocessed skeleton data with pressure data, achieving a **test accuracy of 93.8%**.
-
-## ✨ Key Features
-
-* **Multimodal Data Fusion**: Combines kinematic data (skeleton joints) with kinetic data (foot pressure) to create a robust classification system.
-* **Feature Strategy Comparison**: Systematically compares the effectiveness of traditional preprocessing (variance-based feature selection and scaling) against unsupervised feature learning with a 1D CNN Autoencoder.
-* **Comprehensive Model Comparison**: Trains and evaluates over 10 different deep learning architectures, including various LSTMs, GRUs, Attention models, and hybrid CNN-RNNs.
-* **Rigorous Validation**: Implements **K-Fold** and **Leave-One-Subject-Out (LOSO)** cross-validation to ensure the best model is robust and generalizes well to unseen individuals.
-* **Interactive Demo**: Includes a walkthrough section to visualize model predictions on individual samples, complete with feature heatmaps and confidence scores.
-
-## 📊 Results
-
-The multimodal model using direct preprocessed features (`gru_cnn_fusion`) significantly outperformed all other architectures. The experiment showed that, in this case, unsupervised feature learning with the autoencoder resulted in a loss of critical information, leading to lower performance.
-
-| Model | Test Accuracy |
-| :--- | :--- |
-| **gru_cnn_fusion** | **93.75%** |
-| cnn_lstm | 89.93% |
-| attention | 89.93% |
-| gru | 89.24% |
-| dual_lstm | 88.89% |
+<!-- Model & Results -->
+[![Best Model: GRU(H=128) ~95k params](https://img.shields.io/badge/Best%20Model-GRU(H%3D128)%20~95k%20params-brightgreen)](#)
+[![Group K-Fold Accuracy: 92.42%](https://img.shields.io/badge/Group%20K--Fold-92.42%25-success)](#)
+[![LOSO Accuracy: 87.33%](https://img.shields.io/badge/LOSO-87.33%25-yellowgreen)](#)
+[![Seq. Length: T=100](https://img.shields.io/badge/Seq.%20Length-T%3D100-blue)](#)
+[![Preprocessing: Leakage-Free](https://img.shields.io/badge/Preprocessing-Leakage%E2%80%91Free-informational)](#)
 
 
+Subject-robust classification of pathological gaits from 3D skeleton kinematics (optionally fused with plantar-pressure maps), built around a compact GRU and a leakage-free preprocessing pipeline. Under subject-aware validation, the GRU achieves **92.42%** (Group K-Fold) and **87.33%** (LOSO) mean accuracy with far fewer parameters than deeper/attention models.
 
-## ⚙️ Project Pipeline
+> **Note:** The entire pipeline—preprocessing → feature engineering → models → evaluation—is implemented in a single notebook.
 
-The project follows a systematic pipeline from raw data to final evaluation:
+---
 
-1.  **Data Ingestion & Preprocessing**: Loads data from `skeleton.csv` and `pressure.csv` files for all subjects and trials. Handles missing or infinite values.
-2.  **Feature Engineering & Selection**:
-    * Calculates joint velocities from skeleton positions.
-    * Applies a variance-based feature selection to reduce dimensionality and keep the most informative features.
-    * Normalizes features using `StandardScaler` for skeleton/velocity data and `MinMaxScaler` for pressure data.
-3.  **Model Training**: Trains over 10 different models sequentially, tracking performance metrics like accuracy, loss, training time, and memory usage.
-4.  **Evaluation**: The top models are further validated using 5-Fold and Leave-One-Subject-Out (LOSO) cross-validation to confirm their robustness.
+## At a Glance
 
-## 🚀 How to Run
+- **Signals:** per-frame **32 joints × (x, y, z) = 96 features**; optional **48×128** plantar-pressure maps.  
+- **Task:** 6-class gait classification (*antalgic, lurching, normal, steppage, stiff-legged, trendelenburg*).  
+- **Key idea:** regularize the **input sequence length** and enforce **leakage-free normalization**; a small GRU then rivals heavier stacks.  
+- **Best model:** single-layer **GRU (H=128)** → **Dense(64, ReLU, Dropout=0.5)** → **Softmax(6)**; ~**95k** parameters.  
+- **Main results:** **92.42%** (Group K-Fold), **87.33%** (LOSO); most frequent confusion is *steppage ↔ antalgic*.
 
-1.  **Prerequisites**
-    * Ensure you have Python 3.10+ installed.
-    * Install the required libraries:
-        ```bash
-        pip install pandas numpy scikit-learn tensorflow seaborn matplotlib psutil
-        ```
+---
 
-2.  **Dataset**
-    * Download the dataset from its source.
-    * Place the ZIP file in a directory accessible by the notebook.
-    * Update the `zip_path` variable in the second code cell.
+## Pipeline (Leakage-Free)
 
-3.  **Execution**
-    * Open `gait_recognition.ipynb` in a Jupyter environment.
-    * Run the cells sequentially from top to bottom. The notebook will automatically extract the data, preprocess it, train all models, and display the results.
+1) **Timestamp sanitization** – ensure monotone time per trial.  
+2) **Pelvis centering** (remove translation) + **stature scaling** (size normalization).  
+3) **Train-only z-scoring** for positions (and velocities if used).  
+4) **Optional engineered cues:**  
+   - Joint **angles** (knees/hips/ankles/shoulders), scaled to \[-1, 1].  
+   - **Pelvis-relative velocities**, normalized by median forward pelvis speed.  
+5) **Pressure normalization** – robust percentile scaling (e.g., q0.95).  
+6) **Sequence unification:** fix **T = 100** frames (keep last T), **post-pad with zeros**, and **mask** padding during training.
 
-## 📄 Dataset Citation
+These choices act as strong regularizers and prevent subject leakage across folds.
 
-The dataset used in this project was created by Jun et al. and is publicly available. If you use this dataset in your research, please cite the original paper:
+---
 
-> K. Jun, S. Lee, D. -W. Lee and M. S. Kim, "Deep learning-based multimodal abnormal gait classification using a 3D skeleton and plantar foot pressure," *IEEE Access*, doi: 10.1109/ACCESS.2021.3131613.
+## Feature Sets
 
-## 📜 License
+- **Skeleton-only (96D):** standardized joint positions.  
+- **Engineered fusion (~200D):** positions + angles + pelvis-relative velocities (z-scored).  
+- **Multimodal (optional):** skeleton branch + CNN embedding of pressure maps with **late fusion**.
 
-This project is licensed under the MIT License.
+---
+
+## Model Family Explored
+
+Baselines (LSTM/GRU), deeper stacks, attention-augmented RNNs, CNN–LSTM hybrids, multimodal **GRU+CNN**, and a recurrent **SNN** for efficiency comparison.  
+**Final classifier (skeleton-only):**  
+**Masking** → **GRU(H=128)** → **Dense(64) + ReLU + Dropout(0.5)** → **Softmax(6)**.  
+Rationale: gated memory for periodic-yet-variable gait, fixed-length batching without padding leakage, and moderate capacity at **T=100**.
+
+---
+
+## Evaluation Protocols
+
+Strict **subject-aware** splits: Train/Val/Test by **subject**. All normalization and any unsupervised components (e.g., PCA/AE if used) are fit on **training subjects only** per fold.  
+Cross-validation via **Group K-Fold (groups = subjects)** and **LOSO**.  
+Metrics include overall accuracy and confusion matrices.
+
+---
+
+## Results (Summary)
+
+- **Compact sequences as regularizer:** reducing variable-length inputs to **T=100** curbed overfitting and tightened train–validation gaps.  
+- **Model comparison (snapshot):** the compact GRU outperformed deeper/attention and CNN–LSTM baselines while using fewer parameters; SNN was efficient but lower in accuracy.  
+- **Cross-validated accuracy:** **92.42%** (Group K-Fold), **87.33%** (LOSO).
+
+---
+
+## Diagnostics & Insights
+
+- **Primary confusion:** *steppage vs. antalgic*—the model often picks up upper-body compensations; temporal variability of steppage further blurs the boundary.  
+- **Takeaways:**  
+  1) Fixed, compact windows are powerful regularizers.  
+  2) Leakage-free statistics per fold are essential.  
+  3) Well-controlled inputs let simple GRUs match or beat heavier stacks.
+
+---
+
+## Limitations & Future Work
+
+- Comparative (not reproduced) SOTA figures.  
+- Next steps: targeted markers (e.g., foot-ground clearance), principled multimodal fusion, robustness to domain shift, and calibration/fairness analyses for clinical deployment.
