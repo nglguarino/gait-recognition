@@ -2,7 +2,7 @@
 
 <!-- Tech stack -->
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-orange?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
-[![snnTorch](https://img.shields.io/badge/snnTorch-%20-2F2F2F)](https://snntorch.readthedocs.io/)
+[![snnTorch](https://img.shields.io/badge/snnTorch-2F2F2F)](https://snntorch.readthedocs.io/)
 
 <!-- Model & Results -->
 [![Best Model: GRU(H=128) ~95k params](https://img.shields.io/badge/Best%20Model-GRU(H%3D128)%20~95k%20params-brightgreen)](#)
