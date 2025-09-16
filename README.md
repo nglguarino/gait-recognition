@@ -5,7 +5,7 @@
 [![snnTorch](https://img.shields.io/badge/snnTorch-2F2F2F)](https://snntorch.readthedocs.io/)
 
 <!-- Model & Results -->
-[![Best Model: 95k params GRU](https://img.shields.io/badge/Best%20Model-GRU-95k%20params-brightgreen)](#)
+[![Best Model: 95k params GRU](https://img.shields.io/badge/Best%20Model-95k%20params%20GRU-brightgreen)](#)
 [![Group K-Fold Accuracy: 92.42%](https://img.shields.io/badge/Group%20K--Fold-92.42%25-success)](#)
 [![LOSO Accuracy: 87.33%](https://img.shields.io/badge/LOSO-87.33%25-yellowgreen)](#)
 
