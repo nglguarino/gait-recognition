@@ -5,11 +5,9 @@
 [![snnTorch](https://img.shields.io/badge/snnTorch-2F2F2F)](https://snntorch.readthedocs.io/)
 
 <!-- Model & Results -->
-[![Best Model: GRU(H=128) ~95k params](https://img.shields.io/badge/Best%20Model-GRU(H%3D128)%20~95k%20params-brightgreen)](#)
+[![Best Model: 95k params GRU](https://img.shields.io/badge/Best%20Model-GRU(H%3D128)%20~95k%20params-brightgreen)](#)
 [![Group K-Fold Accuracy: 92.42%](https://img.shields.io/badge/Group%20K--Fold-92.42%25-success)](#)
 [![LOSO Accuracy: 87.33%](https://img.shields.io/badge/LOSO-87.33%25-yellowgreen)](#)
-[![Seq. Length: T=100](https://img.shields.io/badge/Seq.%20Length-T%3D100-blue)](#)
-[![Preprocessing: Leakage-Free](https://img.shields.io/badge/Preprocessing-Leakage%E2%80%91Free-informational)](#)
 
 
 Subject-robust classification of pathological gaits from 3D skeleton kinematics (optionally fused with plantar-pressure maps), built around a compact GRU and a leakage-free preprocessing pipeline. Under subject-aware validation, the GRU achieves **92.42%** (Group K-Fold) and **87.33%** (LOSO) mean accuracy with far fewer parameters than deeper/attention models.
