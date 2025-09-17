@@ -25,7 +25,7 @@ Subject-robust classification of pathological gaits from 3D skeleton kinematics 
 - **Main results:** **92.42%** (Group K-Fold), **87.33%** (LOSO); most frequent confusion is *steppage ↔ antalgic*.
 
 ## Demo
-<video src="lurching.mp4" controls loop muted playsinline style="max-width:100%; height:auto;"></video>
+![Gait demo](demo.gif)
 
 ---
 
