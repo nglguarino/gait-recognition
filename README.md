@@ -12,7 +12,8 @@
 
 Subject-robust classification of pathological gaits from 3D skeleton kinematics (optionally fused with plantar-pressure maps), built around a compact GRU and a leakage-free preprocessing pipeline. Under subject-aware validation, the GRU achieves **92.42%** (Group K-Fold) and **87.33%** (LOSO) mean accuracy with far fewer parameters than deeper/attention models.
 
-> **Note:** The notebook contains the entire pipeline—preprocessing → feature engineering → models → evaluation.
+
+![Gait demo](lurching.gif)
 
 ---
 
@@ -23,9 +24,6 @@ Subject-robust classification of pathological gaits from 3D skeleton kinematics 
 - **Key idea:** regularize the **input sequence length** and enforce **leakage-free normalization**; a small GRU then rivals heavier stacks.  
 - **Best model:** single-layer **GRU (H=128)** → **Dense(64, ReLU, Dropout=0.5)** → **Softmax(6)**; ~**95k** parameters.  
 - **Main results:** **92.42%** (Group K-Fold), **87.33%** (LOSO); most frequent confusion is *steppage ↔ antalgic*.
-
-## Demo
-![Gait demo](demo.gif)
 
 ---
 
